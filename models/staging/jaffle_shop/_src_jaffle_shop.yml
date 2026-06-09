@@ -10,10 +10,21 @@ sources:
         error_after:
           count: 10
           period: day
-      loaded_at_field: _etl_loaded_at 
+      loaded_at_field: _etl_loaded_at
+
     tables:
       - name: customers
+        columns:
+          - name: id
+            data_tests:
+              - unique 
         config: 
           freshness: null
+        
       - name: orders
+        columns:
+          - name: id
+            data_tests:
+              - unique
+              
 
