@@ -1,7 +1,12 @@
+
+# dbt test --select source:*
+# dbt test --select source:jaffle_shop #Eligo solo la prube jaffle_shop
+
 sources:
   - name: jaffle_shop
     database: raw
     schema: jaffle_shop
+    description: A clone of a Postgres application databases.
     config: 
       freshness:
         warn_after:
@@ -14,16 +19,20 @@ sources:
 
     tables:
       - name: customers
+        description: Raw custormer data.
         columns:
           - name: id
+            description: Primary key for customer data.
             data_tests:
               - unique 
         config: 
           freshness: null
         
       - name: orders
+        description: Raw orders data.
         columns:
           - name: id
+            description: Primary key for orders data.
             data_tests:
               - unique
               
