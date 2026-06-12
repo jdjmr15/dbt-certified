@@ -1,5 +1,3 @@
--- Cambio el codigo por la version del curso (refactoring-sql-modularity) y esta version viene con los sources.
-
 select 
     orders.id as order_id,
     orders.user_id as customer_id,
