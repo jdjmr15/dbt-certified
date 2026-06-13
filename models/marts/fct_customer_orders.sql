@@ -17,10 +17,6 @@ with
         from raw_customers
     ),
 
-
-
-
-
     orders as (
         select
             row_number() over (partition by user_id order by order_date, id) as user_order_seq,
@@ -31,6 +27,20 @@ with
             _etl_loaded_at
         from raw_orders
     ),
+
+
+    payments as (
+        select
+             id as payment_id
+            ,orderid as order_id
+            ,paymentmethod as payment_method
+            ,status as payment_status
+            ,round(amount / 100.0, 2) as payment_amount
+            ,created as payment_created_at 
+            ,_batched_at 
+        from raw_payments
+    ),
+
 
     -- Logical CTEs
     customer_order_history as (
@@ -57,14 +67,14 @@ with
             sum(
                 case
                     when order_status not in ('returned', 'return_pending')
-                    then round(c.amount / 100.0, 2)
+                    then payment_amount
                     else 0
                 end
             ) as total_lifetime_value,
             sum(
                 case
                     when order_status not in ('returned', 'return_pending')
-                    then round(c.amount / 100.0, 2)
+                    then payment_amount
                     else 0
                 end
             ) / nullif(
@@ -73,15 +83,15 @@ with
                 ),
                 0
             ) as avg_non_returned_order_value,
-            array_agg(distinct order_id) as order_ids
+            array_agg(distinct orders.order_id) as order_ids
 
         from orders
 
         join customers on orders.customer_id = customers.customer_id
 
-        left outer join raw_payments c on orders.order_id = c.orderid
+        left outer join payments on orders.order_id = payments.order_id
 
-        where order_status not in ('pending') and c.status != 'fail'
+        where order_status not in ('pending') and payments.payment_status != 'fail'
 
         group by customers.customer_id, full_name, surname, givenname
 
@@ -97,16 +107,15 @@ with
             first_order_date,
             order_count,
             total_lifetime_value,
-            round(amount / 100.0, 2) as order_value_dollars,
+            payment_amount as order_value_dollars,
             orders.order_status as order_status,
-            payments.status as payment_status
-
+            payment_status
         from orders
         join customers on orders.customer_id = customers.customer_id
         join customer_order_history on orders.customer_id = customer_order_history.customer_id
-        left outer join raw_payments payments on orders.order_id = payments.orderid
+        left outer join payments on orders.order_id = payments.order_id
 
-        where payments.status != 'fail'
+        where payment_status != 'fail'
     )
 
 -- Final select
