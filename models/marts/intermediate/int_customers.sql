@@ -1,3 +1,4 @@
+with   
     customers as (
         select *
         from {{ ref('stg_customers') }}
@@ -31,7 +32,7 @@
     customer_average_order_value as (
         select
             *,
-            (customer_total_lifetime_value / customer_non_returned_order_count) as customer_avg_non_returned_order_value
+            div0null(customer_total_lifetime_value, customer_non_returned_order_count) as customer_avg_non_returned_order_value
         from customer_orders
     )
 
