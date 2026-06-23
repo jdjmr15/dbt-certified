@@ -9,13 +9,19 @@ with
         from {{ ref('int_orders') }}
     ),
 
+    employees as (
+        select * 
+        from {{ ref('employees') }}
+    ),
+
     customer_orders as (
         select
             orders.*,
             customers.full_name,
             customers.surname,
             customers.givenname,
-
+            employees.employee_id,
+            
             min(order_date) over (partition by customers.customer_id) as customer_first_order_date,
             min(valid_order_date) over (partition by customers.customer_id) as customer_first_non_returned_order_date,
             max(valid_order_date) over (partition by customers.customer_id) as customer_most_recent_non_returned_order_date,
@@ -27,6 +33,8 @@ with
 
         from orders
         inner join customers using (customer_id)
+        left join employees using (customer_id)
+
     ),
 
     customer_average_order_value as (
