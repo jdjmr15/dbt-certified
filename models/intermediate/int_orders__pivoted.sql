@@ -1,11 +1,4 @@
--- payment_id
--- order_id
--- payment_method
--- payment_status
--- payment_amount
--- payment_created
--- _batched_at
-
+{%- set payments_method = ['bank_transfer', 'coupon', 'credit_cart', 'gift_card'] -%}
 
 with payments as (
     select * 
@@ -16,11 +9,15 @@ with payments as (
 ,pivoted as (
     select 
         order_id,
-        sum(case when payment_method = 'bank_transfer' then payment_amount else 0 end) as bank_transfer_amount,
-        sum(case when payment_method = 'coupon' then payment_amount else 0 end) as coupon_amount,
-        sum(case when payment_method = 'credit_cart' then payment_amount else 0 end) as credit_cart_amount,
-        sum(case when payment_method = 'gift_card' then payment_amount else 0 end) as gift_card_amount
-    from payments
+    {%- for payment_method in payments_method %}
+        sum(
+                case 
+                    when payment_method = '{{ payment_method }}' then payment_amount else 0 
+                end
+            ) as {{ payment_method }}_amount 
+        {%- if not loop.last -%}, {%- endif %}  
+    {%- endfor %}
+    from payments 
     group by 1
 )
 
