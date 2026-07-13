@@ -1,0 +1,10 @@
+version: 2
+seeds:
+  - name: orders_amazon
+    config:
+      database: raw
+      schema: jaffle_shop
+  - name: orders_shopify
+    config:
+      database: raw
+      schema: jaffle_shop
