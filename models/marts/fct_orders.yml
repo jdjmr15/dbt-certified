@@ -32,3 +32,16 @@ models:
         data_type: number
       - name: ordered_year
         data_type: number
+    versions:
+      - v: 1
+        config: 
+          alias: fct_orders
+      - v: 2
+        columns:
+          - name: order_amount    ##v2 Adds in new column name and date type change
+            data_type: number
+          - name: location_opened_at
+            data_type: date
+          - include: all           #Includes all other fields
+            exclude: [order_total] #But removes the old name of order_total
+       
