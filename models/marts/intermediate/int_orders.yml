@@ -1,2 +1,5 @@
 models:
   - name: int_orders
+    config: 
+      group: finance
+      access: private

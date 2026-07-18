@@ -1,6 +1,8 @@
 models:
   - name: fct_orders
     config:
+      group: finance
+      access: public
       contract:
         enforced: true
     columns:

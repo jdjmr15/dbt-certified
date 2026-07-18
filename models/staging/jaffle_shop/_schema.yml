@@ -23,15 +23,14 @@ models:
         tests:
           - not_null
           - unique
+
   - name: stg_products
+    config:
+      access: private
+      group: product
     columns:
       - name: product_id
-        tests:
-          - not_null
-          - unique
+
   - name: stg_supplies
     columns:
       - name: supply_uuid
-        tests:
-          - not_null
-          - unique

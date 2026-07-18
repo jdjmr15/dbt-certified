@@ -1,6 +1,8 @@
 models:
   - name: dim_product_supplies
     config:
+      group: product
+      access: public
       contract:
         enforced: true
     columns:
