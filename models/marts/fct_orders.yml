@@ -5,6 +5,7 @@ models:
       access: public
       contract:
         enforced: true
+    latest_version: 2            # Publico la ultima version
     columns:
       - name: order_id
         data_type: varchar
@@ -37,8 +38,10 @@ models:
     versions:
       - v: 1
         config: 
-          alias: fct_orders
+          alias: fct_orders_v1    # Alias para invocar cuando no sea la ultima version.
       - v: 2
+        config: 
+          alias: fct_orders        # Alias
         columns:
           - name: order_amount    ##v2 Adds in new column name and date type change
             data_type: number
