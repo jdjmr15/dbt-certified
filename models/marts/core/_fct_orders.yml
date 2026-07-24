@@ -1,0 +1,22 @@
+models:
+  - name: fct_orders
+    columns:
+      #- name: order_id
+      #  data_tests:
+      #    - not_null
+      #    - unique
+      
+      - name: amount
+        data_tests:
+          - dbt_expectations.expect_column_values_to_be_between:
+              arguments: 
+                min_value: 0  # (Optional)
+                max_value: 9999 # (Optional)
+          - average_dollars_spent_greater_than_one:
+              arguments:
+                group_by_column: customer_id
+          #- dbt_utils.expression_is_true:
+          #    arguments:
+          #      expression: "> 0"
+
+          #- greater_than_zero

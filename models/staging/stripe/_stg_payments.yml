@@ -1,0 +1,9 @@
+models:
+  - name: stg_payments
+    columns:
+    - name: payment_id
+      data_tests:
+        - unique
+        - not_null
+
+        
