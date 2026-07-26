@@ -1,0 +1,80 @@
+models:
+ - name: fct_orders
+   semantic_model:
+     enabled: true
+   agg_time_dimension: ordered_at
+   description: |
+     Order fact table. This table is at the order grain with one row per order.
+   columns:
+     ## entities
+     - name: order_id
+       entity:
+         type: primary
+         name: order_id
+     - name: location_id
+       entity:
+         type: foreign
+         name: location_id
+     - name: customer_id
+       entity:
+         type: foreign
+         name: customer_id
+         
+     - name: is_drink_order
+       dimension: 
+        type: categorical
+
+     - name: ordered_at
+       granularity: day
+       dimension: 
+        type: time
+      
+   metrics:
+    - name: order_total
+      agg: sum
+
+    - name: food_order_amount
+      expr: case when is_food_order then order_total else 0 end
+      agg: sum
+
+    - name: order_cost
+      description: The cost for each order item. Cost is calculated as a sum of the supply cost for each order item.
+      agg: sum
+
+
+metrics: ## advanced metrics
+
+#Ratio type metric
+  - name:  "food_order_pct"
+    label: "food_order_pct"
+    type: ratio
+    numerator: food_order_amount
+    denominator: order_total
+
+#Cumulative Metrics 
+  - name: "cumulative_order_amount"
+    label: "cumulative_order_amount"
+    type: cumulative
+    input_metric: order_total
+
+  - name: "cumulative_order_amount_l1m"
+    label: "cumulative_order_amount_l1m"
+    type: cumulative
+    input_metric: order_total
+    window: 1 month
+
+
+#Derived Metrics      
+
+  - name: "food_order_gross_profit"
+    label: "food_order_gross_profit"    
+    description: "The gross profit for each food order"
+    type: derived
+    expr: order_total - order_cost
+    input_metrics:
+      - name: order_total
+        filter: |
+          {{Dimension('order_id__is_food_order')}} = True
+      - name: order_cost
+        filter: |
+          {{Dimension('order_id__is_food_order')}} = True

@@ -2,29 +2,41 @@ with orders as  (
     select * from {{ ref ('stg_jaffle_shop__orders' )}}
 ),
 
-payments as (
-    select * from {{ ref('stg_stripe__payments') }}
+order_items as (
+    
+    select * from {{ ref('fct_order_items')}}
+
 ),
 
-order_payments as (
+order_items_summary as (
+
     select
-        order_id,
-        sum (case when payment_status = 'success' then payment_amount end) as amount
-    from payments
+
+        order_items.order_id,
+
+        sum(supply_cost) as order_cost,
+        sum(is_food_item) as count_food_items,
+        sum(is_drink_item) as count_drink_items
+
+
+    from order_items
+
     group by 1
+
 ),
 
 
- final as (
-
+compute_booleans as (
     select
-        orders.order_id,
-        orders.customer_id,
-        orders.order_date,
-        coalesce (order_payments.amount, 0) as amount
+
+        orders.*,
+        count_food_items > 0 as is_food_order,
+        count_drink_items > 0 as is_drink_order,
+        order_cost
 
     from orders
-    left join order_payments using (order_id)
+    
+    left join order_items_summary on orders.order_id = order_items_summary.order_id
 )
 
-select * from final
+select * from compute_booleans

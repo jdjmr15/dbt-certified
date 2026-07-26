@@ -1,0 +1,15 @@
+models:
+  - name: dim_customers
+    semantic_model:
+      enabled: true
+    columns:
+      - name: customer_id
+        entity: 
+          type: primary
+          name: customer_id
+
+      - name: last_ordered_at
+        granularity: day
+        dimension:
+          type: time
+
