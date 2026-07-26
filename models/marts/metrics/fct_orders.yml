@@ -41,6 +41,9 @@ models:
       description: The cost for each order item. Cost is calculated as a sum of the supply cost for each order item.
       agg: sum
 
+    - name: order_count
+      expr: 1
+      agg: count
 
 metrics: ## advanced metrics
 
@@ -64,6 +67,7 @@ metrics: ## advanced metrics
     window: 1 month
 
 
+
 #Derived Metrics      
 
   - name: "food_order_gross_profit"
@@ -78,3 +82,12 @@ metrics: ## advanced metrics
       - name: order_cost
         filter: |
           {{Dimension('order_id__is_food_order')}} = True
+
+  - name: "order_gross_profit"
+    label: "order_gross_profit"
+    type: derived
+    expr: order_total - order_cost
+    input_metrics:
+      - name: order_total
+      - name: order_cost
+    
